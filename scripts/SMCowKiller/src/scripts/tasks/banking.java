@@ -27,6 +27,7 @@ public class banking implements task{
         Waiting.waitUntil(Inventory::isEmpty);
         Bank.close();
     }
+    
     public void getArmor(String armourPiece){
         if (!Equipment.contains(armourPiece)&& !Inventory.contains(armourPiece)){
             if (!Bank.contains(armourPiece)){
