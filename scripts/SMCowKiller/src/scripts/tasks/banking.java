@@ -44,6 +44,7 @@ public class banking implements task{
             Waiting.waitUntil(()->Equipment.contains(armourPiece));
         }
     }
+    
     public void getWeapon(String weapon){
         if (!Equipment.contains(weapon)&& !Inventory.contains(weapon)){
             if (!Bank.contains(weapon)){
