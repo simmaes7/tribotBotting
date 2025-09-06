@@ -2,6 +2,7 @@ package scripts.tasks;
 
 import org.tribot.script.sdk.*;
 import org.tribot.script.sdk.query.Query;
+import org.tribot.script.sdk.tasks.BankTask;
 import org.tribot.script.sdk.walking.GlobalWalking;
 
 public class banking implements task{
@@ -27,7 +28,6 @@ public class banking implements task{
         Waiting.waitUntil(Inventory::isEmpty);
         Bank.close();
     }
-    
     public void getArmor(String armourPiece){
         if (!Equipment.contains(armourPiece)&& !Inventory.contains(armourPiece)){
             if (!Bank.contains(armourPiece)){

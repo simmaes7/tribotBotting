@@ -7,11 +7,14 @@ import org.tribot.script.sdk.input.Mouse;
 import org.tribot.script.sdk.query.Query;
 import org.tribot.script.sdk.types.Area;
 import org.tribot.script.sdk.types.GroundItem;
+import org.tribot.script.sdk.types.Npc;
 import org.tribot.script.sdk.types.WorldTile;
 import org.tribot.script.sdk.walking.GlobalWalking;
 import scripts.antiban.*;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 public class killing implements task{
     private static boolean isKilled;
@@ -28,35 +31,32 @@ public class killing implements task{
     );
     @Override
     public void execute() {
-        if (!cowArea.containsMyPlayer()){
+        while (!cowArea.containsMyPlayer()){
             GlobalWalking.walkTo(cowArea.getRandomTile());
             Waiting.waitUntil(cowArea::containsMyPlayer);
         }
         while (!Inventory.isFull()){
-            killCow();
             lottery.execute(0.13, () -> miniBreak.fatigueLeave(1));
             Waiting.wait(fatigueResolver.getMilliseconds());
             lottery.execute(0.3, miniBreak::leave);
+            killCow();
             while (!isKilled){
                 lootFloor();
             }
         }
     }
     public static void killCow(){
-        isKilled = false;
-        if (!MyPlayer.isAnimating() && !MyPlayer.isMoving()){
-            Query.npcs().nameEquals("Cow")
-                    .isNotBeingInteractedWith()
-                    .isVisible()
-                    .findBestInteractable()
-                    .ifPresent(i->i.click("Attack"));
-        }
-        Waiting.waitUntil(()->!MyPlayer.isAnimating());
-        Waiting.waitNormal(1000,50);
-        
-        if (Query.groundItems().nameEquals("Cowhide").maxDistance(2).isAny());{
+        Optional<Npc> targetCow;
+        if (MyPlayer.isAnimating()){
+            targetCow = Query.npcs().nameEquals("Cow").isMyPlayerInteractingWith().findFirst();
+            Waiting.waitUntil(targetCow::isEmpty);
             isKilled = true;
+        } else{
+            targetCow = Query.npcs().nameEquals("Cow").isNotBeingInteractedWith().findBestInteractable().stream().findFirst();
+            targetCow.map(i->i.click("Attack"));
+            Waiting.waitUntil(targetCow::isEmpty);
         }
+        
     }
     public static void lootFloor(){
         List<GroundItem> groundItems = Query.groundItems().isReachable().maxDistance(2).toList();
@@ -70,7 +70,7 @@ public class killing implements task{
                 
             }
             if (groundItem.getId() == 526){
-                while (Inventory.getCount("Cowhide") != Inventory.getCount("Cowhide")+1){
+                while (Inventory.getCount("Bones") != Inventory.getCount("Bones")+1){
                     groundItem.interact("Take");
                     Waiting.waitNormal(700,50);
                     Waiting.waitUntil(()->!MyPlayer.isAnimating());
