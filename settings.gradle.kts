@@ -10,6 +10,7 @@ include("scripts:blueDye")
 include("scripts:logoutManager")
 include("scripts:escapeF2P")
 include("scripts:SMCowKiller")
+include("scripts:SMwoodcutter")
 
 include("scripts")
 

@@ -1,6 +1,7 @@
 package scripts;
 import org.jetbrains.annotations.NotNull;
 
+import org.tribot.script.sdk.Combat;
 import org.tribot.script.sdk.script.ScriptConfig;
 
 import org.tribot.script.sdk.script.TribotScript;
@@ -24,7 +25,11 @@ public class LumbridgeCowKiller implements TribotScript {
 
     @Override
     public void execute(@NotNull String s) {
-        banking.execute();
-        killing.execute();
+        while (true){
+            Combat.setAutoRetaliate(true);
+            banking.execute();
+            killing.execute();
+        }
+        
     }
 }

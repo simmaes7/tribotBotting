@@ -1,76 +1,52 @@
 package scripts.antiban;
 
 import scripts.Logger;
+
 import java.time.LocalDateTime;
 
 public class runtimeTracker {
     private static Long startedAt = null;
     private static Logger logger = null;
 
-    // Private constructor to prevent instantiation.
-    private runtimeTracker() { }
-
-    /**
-     * Initializes the logger for RuntimeTracker.
-     * @param log the Logger instance to use.
-     */
     public static void initLogger(Logger log) {
         logger = log;
     }
 
-    /**
-     * Initializes the runtime tracker by recording the current system time.
-     */
-    public static void init() {
-        startedAt = System.currentTimeMillis();
+    public static void init(){
+        startedAt = System.currentTimeMillis(); //saves time in millis,that means 1,724,690,478,564 milliseconds have passed since Jan 1, 1970 UTC.
     }
 
-    /**
-     * Returns the number of hours the script has been running.
-     * If 24 or more hours have passed, it reinitializes the tracker.
-     * @return the runtime in hours.
-     */
-    public static int hours() {
-        int hrs = (int) (calculate() / 3600000.0);
+    public static int hours(){ //returns elapsed hours
+        int hours = (int) (calculateElapsedTime() / 3600000.0);
         if (logger != null) {
-            logger.debug("[RuntimeTracker] - hours: " + hrs);
+            logger.debug("[RuntimeTracker] - hours " + hours);
         }
-        if (hrs >= 24) {
+        if (hours >= 24){
             init();
         }
-        return hrs;
+        return hours;
     }
 
-    /**
-     * Returns the number of minutes (rounded up) within the current hour.
-     * @return the minutes.
-     */
-    public static int minutes() {
-        int mins = (int) Math.ceil((calculate() % 3600000) / 60000.0);
+    public static int minutes() { //returns the minutes after subtracting the hours.
+        int minutes = (int) Math.ceil((calculateElapsedTime() % 3600000) / 60000.0);
+        //Math.ceil rounds up and returns double -> (int)
+        //% gives the remainder after dividing by 3 600 000 which is 1 hour
+        // 60 000 because we want it in minutes, not in millis
         if (logger != null) {
-            logger.debug("[RuntimeTracker] - minutes: " + mins);
+            logger.debug("[RuntimeTracker] - minutes: " + minutes);
         }
-        return mins;
+        return minutes;
     }
 
-    /**
-     * Returns the current hour of the day (0-23) using LocalDateTime.
-     * @return the current hour.
-     */
-    public static int currentHour() {
-        int currentHour = LocalDateTime.now().getHour();
+    public static int currentHour() { //returns current hour of the day, so 2:30 AM -> 2 and 11:59 PM -> 23
+        int hour = LocalDateTime.now().getHour();
         if (logger != null) {
-            logger.debug("[RuntimeTracker] - currentHour: " + currentHour);
+            logger.debug("[RuntimeTracker] - currentHour: " + hour);
         }
-        return currentHour;
+        return hour;
     }
 
-    /**
-     * Calculates the elapsed time in milliseconds since the tracker was initialized.
-     * If not initialized, it calls init() first.
-     * @return the elapsed time in milliseconds.
-     */
-    private static long calculate() {
+    private static long calculateElapsedTime() { //calculates time since start of script
         if (startedAt == null) {
             init();
         }
