@@ -264,15 +264,15 @@ public class f2prestricted implements TribotScript {
         if (!hansArea.containsMyPlayer()) {
             GlobalWalking.walkTo(hansArea.getRandomTile());
         } 
-            while (chatMessage.isEmpty()){
-                if (talkToHans() && Waiting.waitUntil(ChatScreen::isOpen)) {
-                    Waiting.waitNormal(600, 90);
-                    Optional<String> optionalMessage = ChatScreen.getMessage();
-                    if (optionalMessage.isPresent()) {
-                        chatMessage = optionalMessage.get();
-                    }
+        while (chatMessage.isEmpty()){
+            if (talkToHans() && Waiting.waitUntil(ChatScreen::isOpen)) {
+                Waiting.waitNormal(600, 90);
+                Optional<String> optionalMessage = ChatScreen.getMessage();
+                if (optionalMessage.isPresent()) {
+                    chatMessage = optionalMessage.get();
                 }
             }
+        }
 
         // If no chat message is found, we don't have valid time data.
         if (chatMessage.isEmpty()) {
