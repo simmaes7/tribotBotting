@@ -1,7 +1,6 @@
 rootProject.name = "tribot-script-template"
 
 include("libraries:framework")
-include("scripts:woodcuttingLumbridge")
 include("scripts:ironSmelting")
 include("scripts:cowKiller")
 include("scripts:miningFull")
@@ -11,6 +10,7 @@ include("scripts:logoutManager")
 include("scripts:escapeF2P")
 include("scripts:SMCowKiller")
 include("scripts:SMwoodcutter")
+include("scripts:SMrestricted")
 
 include("scripts")
 
