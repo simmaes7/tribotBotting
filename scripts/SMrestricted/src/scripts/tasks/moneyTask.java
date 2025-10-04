@@ -21,6 +21,7 @@ public class moneyTask {
             }
             Bank.close();
 
+
             while (constants.trees_above_grandExchange.getCenter().distance() > 5){
                 if (GlobalWalking.walkTo(constants.trees_above_grandExchange.getCenter()) && Waiting.waitUntil(()-> constants.trees_above_grandExchange.getCenter().distance() <=5)){
                     Waiting.waitNormal(600,90);
