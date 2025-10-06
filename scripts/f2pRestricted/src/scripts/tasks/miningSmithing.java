@@ -212,6 +212,7 @@ public class miningSmithing {
         Bank.ensureOpen();
         waitRandom(650,800);
         Log.info("withdrawing all coins");
+        Log.info("withdrawing all coins");
         Bank.withdrawAll("Coins");
         waitRandom(650,800);
         Bank.close();

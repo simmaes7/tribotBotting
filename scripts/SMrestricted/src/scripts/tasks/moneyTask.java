@@ -1,8 +1,10 @@
 package scripts.tasks;
 
-import org.tribot.script.sdk.Bank;
-import org.tribot.script.sdk.Inventory;
-import org.tribot.script.sdk.Waiting;
+import okhttp3.internal.connection.Exchange;
+import okhttp3.internal.http2.Http2ExchangeCodec;
+import org.tribot.script.sdk.*;
+import org.tribot.script.sdk.query.GrandExchangeOfferQuery;
+import org.tribot.script.sdk.types.GrandExchangeOffer;
 import org.tribot.script.sdk.walking.GlobalWalking;
 import scripts.Logger;
 import scripts.constants;
@@ -16,7 +18,7 @@ public class moneyTask {
         boolean completed = false;
         setup();
         while (!completed){
-            if (walking.walkingToTile(4,constants.normalTreeArea.getCenter())){
+            if (walking.walkingToTile(constants.trees_above_grandExchange.getCenter(),4)){
                 log.info("walked to trees");
             } else{log.info("Failed to walk to trees");}
             while (!Inventory.isFull()){
@@ -52,12 +54,29 @@ public class moneyTask {
     }
     public static void woodCutting(){
         miniBreak.maybeMicroBreak(0.35);
-        resource.cutTreeArea("Tree",constants.normalTreeArea);
+        resource.cutTreeArea("Tree",constants.trees_above_grandExchange);
         miniBreak.maybeMicroBreak(0.15);
         waiter.waitForAnimation();
         miniBreak.maybeShortBreak(0.08);
         waiter.waitForNonAnimation();
         miniBreak.maybeMicroBreak(0.4);
         miniBreak.maybeShortBreak(0.05);
+    }
+    private static void end(){
+        walking.walkingToTile(constants.grandExchange.getCenter(),5);
+        Bank.ensureOpen();
+        BankSettings.setNoteEnabled(true);
+        Bank.withdrawAll("Logs");
+        Bank.close();
+        GrandExchange.open();
+        GrandExchange.CreateOfferConfig config = GrandExchange.CreateOfferConfig.builder()
+                .type(GrandExchangeOffer.Type.SELL)  // Change to SELL offer
+                .slot(GrandExchangeOffer.Slot.ONE)  // Choose the slot for the offer
+                .itemName("Logs")
+                .priceAdjustment(-6)
+                .quantity(Inventory.getCount("Logs")) // Price per item (you can adjust based on the current market)
+                .interruptCondition(() -> false)  // No interrupt condition, let the offer run until done
+                .build();
+        GrandExchange.placeOffer(config);
     }
 }

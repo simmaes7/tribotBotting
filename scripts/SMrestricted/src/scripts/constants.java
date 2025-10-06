@@ -9,5 +9,6 @@ public class constants {
     public static final String[] Apothecary_Dialogue = {"Talk about something else.","Talk about Romeo & Juliet."};
 
     public static final Area hansArea = Area.fromRadius(new WorldTile(3221, 3219, 0), 1);
-    public static final Area normalTreeArea = Area.fromRectangle(new WorldTile(3197, 3520), new WorldTile(3272, 3508));
+    public static Area grandExchange = Area.fromRectangle(new WorldTile(3159, 3494), new WorldTile(3169, 3485));
+    public static Area trees_above_grandExchange = Area.fromRectangle(new WorldTile(3198, 3520), new WorldTile(3242, 3508));
 }

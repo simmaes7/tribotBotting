@@ -5,7 +5,7 @@ import org.tribot.script.sdk.types.WorldTile;
 import org.tribot.script.sdk.walking.GlobalWalking;
 
 public class walking {
-    public static boolean walkingToTile(int distance, WorldTile tile) {
+    public static boolean walkingToTile(WorldTile tile,int distance) {
         // Check if we are further than the required distance
         if (tile.distance() > distance) {
             // Try to walk to the tile and wait until we're close enough
