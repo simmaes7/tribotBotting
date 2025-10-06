@@ -45,6 +45,13 @@ public class runtimeTracker {
         }
         return hour;
     }
+    public static int currentMinute() { //returns current hour of the day, so 2:30 AM -> 2 and 11:59 PM -> 23
+        int minute = LocalDateTime.now().getMinute();
+        if (logger != null) {
+            logger.debug("[RuntimeTracker] - currentMinute: " + minute);
+        }
+        return minute;
+    }
 
     private static long calculateElapsedTime() { //calculates time since start of script
         if (startedAt == null) {

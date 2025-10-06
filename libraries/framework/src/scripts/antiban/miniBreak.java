@@ -1,11 +1,15 @@
 package scripts.antiban;
 
 import lombok.Getter;
+import org.tribot.script.sdk.Login;
+import org.tribot.script.sdk.MyPlayer;
 import org.tribot.script.sdk.Waiting;
 import org.tribot.script.sdk.input.Mouse;
+import org.tribot.script.sdk.interfaces.Character;
 import org.tribot.script.sdk.util.TribotRandom;
 import scripts.Logger;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class miniBreak {
     /**
@@ -15,6 +19,8 @@ public class miniBreak {
     @Getter
     private static boolean active = false;
     private static final Random RAND = new Random();
+    private static boolean lunchTaken = false;
+
 
     /**
      * Leave based on mean/sd optional parameters
@@ -129,7 +135,9 @@ public class miniBreak {
 
         active = false;
     }
-
+    public static void maybeMicroBreak(double chance){
+        lottery.execute(chance,miniBreak::microBreak);
+    }
     /**
      * A short human-like break (≈0.5–3 s).
      * <p>
@@ -166,7 +174,9 @@ public class miniBreak {
 
         active = false;
     }
-
+    public static void maybeShortBreak(double chance){
+        lottery.execute(chance,miniBreak::shortBreak);
+    }
     /**
      * A medium human-like break (≈5–20 s), generally leaving the screen.
      * <p>
@@ -203,7 +213,9 @@ public class miniBreak {
 
         active = false;
     }
-
+    public static void maybeMediumBreak(double chance){
+        lottery.execute(chance,miniBreak::mediumBreak);
+    }
     /**
      * A rare long break (≈30–120 s), almost always leaving the screen.
      * <p>
@@ -239,5 +251,35 @@ public class miniBreak {
         Waiting.wait(ms);
 
         active = false;
+    }
+    public static void maybeLongBreak(double chance){
+        lottery.execute(chance,miniBreak::longBreak);
+    }
+    public static void maybeLunchBreak(){
+        if (!lunchTaken){
+            int currentHour = runtimeTracker.currentHour();
+            int currentMinute = runtimeTracker.currentMinute();
+            if (currentHour >= 12 && currentHour < 14){
+                lottery.execute(0.02, miniBreak::lunchBreak);
+            } else{
+                int targetMinute = ThreadLocalRandom.current().nextInt(60) + 1; // 0–9
+                if  (currentMinute >= targetMinute){
+                    miniBreak.lunchBreak();
+                }
+            }
+        }
+    }
+    public static void lunchBreak(){
+        active = true;
+        int ms = java.util.concurrent.ThreadLocalRandom.current()
+                .nextInt(1_800_000, 7_200_001); // [1,800,000 .. 7,200,000]
+        Login.logout();
+        Mouse.leaveScreen();
+        Waiting.wait(ms);
+        Login.login();
+        active = false;
+
+
+        lunchTaken = true;
     }
 }

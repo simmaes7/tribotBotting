@@ -10,8 +10,8 @@ include("scripts:logoutManager")
 include("scripts:escapeF2P")
 include("scripts:SMCowKiller")
 include("scripts:SMwoodcutter")
+include("scripts:SMironSmelter")
 include("scripts:SMrestricted")
-
 include("scripts")
 
 pluginManagement {

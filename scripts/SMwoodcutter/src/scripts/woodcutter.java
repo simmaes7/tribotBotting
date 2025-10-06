@@ -20,7 +20,7 @@ import scripts.antiban.*;
 public class woodcutter implements TribotScript{
     public static Area oak_trees = Area.fromRectangle(new WorldTile(3171, 3407), new WorldTile(3159, 3422));
     private boolean stop = false;
-    private double stopChance = 0.7;
+    private double stopChance = 0.05;
     private final Logger log = new Logger("Woodcutter");
 
     @Override
@@ -33,10 +33,9 @@ public class woodcutter implements TribotScript{
     
     @Override
     public void execute(@NotNull String s) {
+        Camera.setZoomPercent(0);
         //setup();
-        log.debug("finished the setup");
         while (!stop){
-            log.debug("entered while loop");
             while (!Bank.isNearby()){
                 lottery.execute(0.04, miniBreak::shortBreak);
                 GlobalWalking.walkToBank();
@@ -44,27 +43,36 @@ public class woodcutter implements TribotScript{
             }
             Bank.ensureOpen();
             Bank.depositInventory();
-            lottery.execute(0.12, miniBreak::shortBreak);
-            lottery.execute(0.05, miniBreak::mediumBreak);
-            lottery.execute(0.02,miniBreak::longBreak);
+            miniBreak.maybeMicroBreak(0.12);
+            miniBreak.maybeMediumBreak(0.05);
+            miniBreak.maybeLongBreak(0.02);
             Bank.close();
             if (maybeStopSession()){
                 log.info("stopped the session");
             }
+            else{
+                log.info("stopchance is "+ stopChance);
+            }
+            if (oak_trees.getCenter().distance() > 3){
+                if (GlobalWalking.walkTo(oak_trees.getCenter()) && Waiting.waitUntil(()-> oak_trees.getCenter().distance() <= 3)){
+                    Waiting.waitNormal(600, 90);
+                }
+            }
+            /*
             if (Bank.isNearby()){
                 log.debug("walking to trees now");
                 lottery.execute(0.04, miniBreak::shortBreak);
                 GlobalWalking.walkTo(oak_trees.getRandomTile());
             }
+             */
             while (!Inventory.isFull()){
                 log.debug("Cutting inventory");
                 woodCutting();
             }
-            if (stop){
-                Login.logout();
-            }
         }
+        Login.logout();
     }
+
     public void cutTree(){
         Query.gameObjects()
                 .nameEquals("Oak tree")

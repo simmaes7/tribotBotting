@@ -1,46 +1,63 @@
 package scripts.tasks;
 
-import
 import org.tribot.script.sdk.Bank;
-import org.tribot.script.sdk.Equipment;
 import org.tribot.script.sdk.Inventory;
 import org.tribot.script.sdk.Waiting;
 import org.tribot.script.sdk.walking.GlobalWalking;
+import scripts.Logger;
+import scripts.constants;
+import scripts.interacting.*;
+import scripts.antiban.*;
+
 
 public class moneyTask {
-    boolean enoughLogs = false;
-    public void execute(){
-        //setup();
-        while (!enoughLogs){
+    static Logger log = new Logger("moneyTask");
+    public static void execute(){
+        boolean completed = false;
+        setup();
+        while (!completed){
+            if (walking.walkingToTile(4,constants.normalTreeArea.getCenter())){
+                log.info("walked to trees");
+            } else{log.info("Failed to walk to trees");}
+            while (!Inventory.isFull()){
+                woodCutting();
+            }
+            if (!Bank.isNearby()){
+                GlobalWalking.walkToBank();
+            }
             Bank.ensureOpen();
             Bank.depositInventory();
-            if (!Equipment.contains("Bronze axe") && !Inventory.contains("Bronze axe")){
-                Bank.withdraw("Bronze axe",1);
-                Bank.close();
-                Equipment.equip("Bronze axe");
+            if (Bank.getCount("Logs") > 300){
+                completed = true;
             }
             Bank.close();
-
-
-            while (constants.trees_above_grandExchange.getCenter().distance() > 5){
-                if (GlobalWalking.walkTo(constants.trees_above_grandExchange.getCenter()) && Waiting.waitUntil(()-> constants.trees_above_grandExchange.getCenter().distance() <=5)){
-                    Waiting.waitNormal(600,90);
-                }
-            }
+            miniBreak.maybeMicroBreak(0.2);
+            miniBreak.maybeMediumBreak(0.1);
+            miniBreak.maybeLongBreak(0.05);
         }
+
     }
-    public void setup(){
-        walkToGE();
+    private static void setup(){
+        if (!Bank.isNearby()){
+            GlobalWalking.walkToBank();
+        }
         Bank.ensureOpen();
         Bank.depositEquipment();
         Bank.depositInventory();
+        while(Inventory.contains("Bronze axe")){
+            Bank.withdraw("Bronze axe",1);
+            Waiting.wait(600);
+        }
         Bank.close();
     }
-    public void walkToGE(){
-        while (constants.grandExchange.getCenter().distance() > 5){
-            if (GlobalWalking.walkTo(constants.grandExchange.getCenter()) && Waiting.waitUntil(()-> constants.grandExchange.getCenter().distance() <=5)){
-                Waiting.waitNormal(600,90);
-            }
-        }
+    public static void woodCutting(){
+        miniBreak.maybeMicroBreak(0.35);
+        resource.cutTreeArea("Tree",constants.normalTreeArea);
+        miniBreak.maybeMicroBreak(0.15);
+        waiter.waitForAnimation();
+        miniBreak.maybeShortBreak(0.08);
+        waiter.waitForNonAnimation();
+        miniBreak.maybeMicroBreak(0.4);
+        miniBreak.maybeShortBreak(0.05);
     }
 }
