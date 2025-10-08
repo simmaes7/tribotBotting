@@ -11,14 +11,18 @@ import org.tribot.script.sdk.query.*;
 import org.tribot.script.sdk.walking.GlobalWalking;
 import scripts.antiban.*;
 
+import scripts.tasks.moneyTask;
 public class restricted implements TribotScript{
+    moneyTask moneyTask = new moneyTask();
     @Override
     public void configure(@NotNull ScriptConfig config) {
         TribotScript.super.configure(config);
+        config.setBreakHandlerEnabled(false);
+        config.setRandomsAndLoginHandlerEnabled(false);
     }
 
     @Override
     public void execute(@NotNull String s) {
-
+        moneyTask.execute();
     }
 }

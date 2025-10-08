@@ -14,8 +14,9 @@ import scripts.antiban.*;
 
 public class moneyTask {
     static Logger log = new Logger("moneyTask");
-    public static void execute(){
+    public void execute(){
         boolean completed = false;
+        /*
         setup();
         while (!completed){
             if (walking.walkingToTile(constants.trees_above_grandExchange.getCenter(),4)){
@@ -29,7 +30,7 @@ public class moneyTask {
             }
             Bank.ensureOpen();
             Bank.depositInventory();
-            if (Bank.getCount("Logs") > 300){
+            if (Bank.getCount("Logs") > 30){
                 completed = true;
             }
             Bank.close();
@@ -38,6 +39,8 @@ public class moneyTask {
             miniBreak.maybeLongBreak(0.05);
         }
 
+         */
+        end();
     }
     private static void setup(){
         if (!Bank.isNearby()){
@@ -46,14 +49,15 @@ public class moneyTask {
         Bank.ensureOpen();
         Bank.depositEquipment();
         Bank.depositInventory();
-        while(Inventory.contains("Bronze axe")){
+        while(!Inventory.contains("Bronze axe")){
             Bank.withdraw("Bronze axe",1);
             Waiting.wait(600);
         }
+        Equipment.equip("Bronze axe");
         Bank.close();
     }
     public static void woodCutting(){
-        miniBreak.maybeMicroBreak(0.35);
+        miniBreak.maybeMicroBreak(0.20);
         resource.cutTreeArea("Tree",constants.trees_above_grandExchange);
         miniBreak.maybeMicroBreak(0.15);
         waiter.waitForAnimation();
@@ -78,5 +82,11 @@ public class moneyTask {
                 .interruptCondition(() -> false)  // No interrupt condition, let the offer run until done
                 .build();
         GrandExchange.placeOffer(config);
+        Waiting.wait(2000);
+        GrandExchange.collectAll();
+        GrandExchange.close();
+        Bank.ensureOpen();
+        Bank.depositInventory();
+        Bank.depositEquipment();
     }
 }
